@@ -9,9 +9,10 @@ interface HeaderProps {
   divisionName: string;
   isAdmin: boolean;
   onLogout: () => void;
+  onOpenAdmin?: () => void;
 }
 
-export default function Header({ logoUrl, divisionName, isAdmin, onLogout }: HeaderProps) {
+export default function Header({ logoUrl, divisionName, isAdmin, onLogout, onOpenAdmin }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
@@ -64,10 +65,15 @@ export default function Header({ logoUrl, divisionName, isAdmin, onLogout }: Hea
 
           <div className="flex items-center gap-2">
             {isAdmin && (
-              <Badge variant="secondary" className="hidden md:flex items-center gap-1">
-                <User className="h-3 w-3" />
-                Admin
-              </Badge>
+              <div className="hidden md:flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={() => onOpenAdmin && onOpenAdmin()} data-testid="button-open-admin">
+                  Edit
+                </Button>
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  Admin
+                </Badge>
+              </div>
             )}
             <Button
               variant="ghost"
@@ -106,6 +112,9 @@ export default function Header({ logoUrl, divisionName, isAdmin, onLogout }: Hea
               ))}
               {isAdmin && (
                 <div className="flex items-center gap-2 px-4 py-2">
+                  <Button variant="ghost" onClick={() => onOpenAdmin && onOpenAdmin()} className="justify-start">
+                    Edit
+                  </Button>
                   <Badge variant="secondary" className="flex items-center gap-1">
                     <User className="h-3 w-3" />
                     Admin

@@ -1,7 +1,8 @@
-import { 
-  Database, Globe, LineChart, FileText, Settings, 
+import {
+  Database, Globe, LineChart, FileText, Settings,
   Cloud, Shield, Users, BarChart, Cpu,
-  Layers, Search, Archive, BookOpen, Smartphone
+  Layers, Search, Archive, BookOpen, Smartphone,
+  Calendar, Wrench, Inbox, Smile, Phone, Map
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -21,6 +22,12 @@ const iconMap = {
   archive: Archive,
   bookopen: BookOpen,
   smartphone: Smartphone,
+  calendar: Calendar,
+  wrench: Wrench,
+  inbox: Inbox,
+  smile: Smile,
+  phone: Phone,
+  map: Map,
 };
 
 interface Service {
@@ -49,11 +56,12 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
               <Card 
                 key={service.id} 
                 className="hover-elevate active-elevate-2 cursor-pointer transition-all"
-                onClick={() => {
-                  if (service.link) {
-                    console.log(`Navigate to: ${service.link}`);
-                  }
-                }}
+                  onClick={() => {
+                    if (service.link && service.link !== '#') {
+                      // open in new tab
+                      window.open(service.link, '_blank');
+                    }
+                  }}
                 data-testid={`card-service-${service.id}`}
               >
                 <CardContent className="flex flex-col items-center justify-center p-6 text-center gap-3">

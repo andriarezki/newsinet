@@ -14,7 +14,30 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(username, password);
+    // try server login, but fall back to client-side demo auth if server is unreachable
+    (async () => {
+      try {
+  const resp = await fetch('/api/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username, password }), credentials: 'include' });
+        if (resp.ok) {
+          // mark local success so UI updates reliably
+          try { localStorage.setItem('smartri_loggedIn', 'true'); localStorage.setItem('smartri_role', username === 'admin' ? 'admin' : 'user'); } catch {}
+          console.log('[LoginForm] server login ok - calling onLogin', { username });
+          onLogin(username, password);
+          return;
+        }
+      } catch (e) {
+        // server not reachable, fall through to client-side check
+      }
+
+      // client-side demo credentials
+      if ((username === 'user' && password === 'user') || (username === 'admin' && password === 'admin123')) {
+        try { localStorage.setItem('smartri_loggedIn', 'true'); localStorage.setItem('smartri_role', username === 'admin' ? 'admin' : 'user'); } catch {}
+        console.log('[LoginForm] client-side login ok - calling onLogin', { username });
+        onLogin(username, password);
+      } else {
+        onLogin('', '');
+      }
+    })();
   };
 
   return (
@@ -65,7 +88,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                 <p className="text-muted-foreground">user / user</p>
               </div>
               <div>
-                <p className="font-semibold">Admin (Full Access):</p>
+                <p className="font-semibold">Privileged Account:</p>
                 <p className="text-muted-foreground">admin / admin123</p>
               </div>
             </div>
