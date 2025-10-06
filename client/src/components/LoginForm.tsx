@@ -88,7 +88,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                 <p className="text-muted-foreground">user / user</p>
               </div>
               <div>
-                <p className="font-semibold">Privileged Account:</p>
+                <p className="font-semibold">Admin (Full Access):</p>
                 <p className="text-muted-foreground">admin / admin123</p>
               </div>
             </div>

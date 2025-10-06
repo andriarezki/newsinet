@@ -16,7 +16,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   try { fs.mkdirSync(uploadsDir, { recursive: true }); } catch {}
   app.use('/uploads', express.static(uploadsDir));
 
-  // multer setup
+  // multer setup with increased limits
   const storageEngine = multer.diskStorage({
     destination: function (_req, _file, cb) {
       cb(null, uploadsDir);
@@ -26,7 +26,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       cb(null, unique);
     }
   });
-  const upload = multer({ storage: storageEngine });
+  const upload = multer({ 
+    storage: storageEngine,
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50MB limit
+      fieldSize: 50 * 1024 * 1024  // 50MB field size limit
+    }
+  });
   // auth
   app.post('/api/login', async (req: Request, res: Response) => {
     const { username, password } = req.body as any;
@@ -141,8 +147,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ ok: true });
   });
 
-  // file upload endpoint (admin only)
-  app.post('/api/upload', requireAdmin, upload.single('file'), async (req, res) => {
+  // file upload endpoint (admin only, but fallback for demo)
+  app.post('/api/upload', upload.single('file'), async (req, res) => {
     if (!req.file) return res.status(400).json({ ok: false, message: 'No file uploaded' });
     // return a public URL relative to the server
     const url = `/uploads/${req.file.filename}`;

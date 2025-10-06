@@ -1,8 +1,14 @@
 import { Link } from "wouter";
-import { Menu, X, LogOut, User } from "lucide-react";
+import { Menu, X, LogOut, User, ChevronDown, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   logoUrl?: string;
@@ -10,9 +16,10 @@ interface HeaderProps {
   isAdmin: boolean;
   onLogout: () => void;
   onOpenAdmin?: () => void;
+  relatedLinks?: Array<{ id: string; title: string; url: string; target: string }>;
 }
 
-export default function Header({ logoUrl, divisionName, isAdmin, onLogout, onOpenAdmin }: HeaderProps) {
+export default function Header({ logoUrl, divisionName, isAdmin, onLogout, onOpenAdmin, relatedLinks }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
@@ -61,6 +68,33 @@ export default function Header({ logoUrl, divisionName, isAdmin, onLogout, onOpe
                 {item.label}
               </Button>
             ))}
+            
+            {/* Related Links Dropdown */}
+            {relatedLinks && relatedLinks.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="text-sm flex items-center gap-1">
+                    Related Links
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  {relatedLinks.map((link) => (
+                    <DropdownMenuItem key={link.id} asChild>
+                      <a
+                        href={link.url}
+                        target={link.target}
+                        rel={link.target === '_blank' ? 'noopener noreferrer' : undefined}
+                        className="flex items-center gap-2 w-full"
+                      >
+                        <span className="flex-1">{link.title}</span>
+                        {link.target === '_blank' && <ExternalLink className="h-3 w-3" />}
+                      </a>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </nav>
 
           <div className="flex items-center gap-2">
@@ -110,6 +144,35 @@ export default function Header({ logoUrl, divisionName, isAdmin, onLogout, onOpe
                   {item.label}
                 </Button>
               ))}
+              
+              {/* Related Links for Mobile */}
+              {relatedLinks && relatedLinks.length > 0 && (
+                <div className="border-t pt-2 mt-2">
+                  <div className="px-4 py-2 text-sm font-medium text-muted-foreground">
+                    Related Links
+                  </div>
+                  {relatedLinks.map((link) => (
+                    <Button
+                      key={link.id}
+                      variant="ghost"
+                      asChild
+                      className="justify-start pl-6"
+                    >
+                      <a
+                        href={link.url}
+                        target={link.target}
+                        rel={link.target === '_blank' ? 'noopener noreferrer' : undefined}
+                        className="flex items-center gap-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <span className="flex-1">{link.title}</span>
+                        {link.target === '_blank' && <ExternalLink className="h-3 w-3" />}
+                      </a>
+                    </Button>
+                  ))}
+                </div>
+              )}
+              
               {isAdmin && (
                 <div className="flex items-center gap-2 px-4 py-2">
                   <Button variant="ghost" onClick={() => onOpenAdmin && onOpenAdmin()} className="justify-start">
